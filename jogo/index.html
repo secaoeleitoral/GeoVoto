@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GeoVoto</title>
+  <link rel="stylesheet" href="estilo.css?v=7">
+</head>
+<body>
+  <div id="streetview"></div>
+
+  <!-- Barra superior -->
+  <header id="barra" hidden>
+    <div class="logo">Geo<span>Voto</span></div>
+    <div class="placar">
+      <div><small>Rodada</small><b id="rodada">1/5</b></div>
+      <div><small>Pontos</small><b id="pontos">0</b></div>
+      <div><small>Sequência</small><b id="sequencia">0</b></div>
+    </div>
+    <div class="acoes">
+      <button id="btn-inicio" class="fantasma" title="Voltar ao ponto inicial">⟲ Início</button>
+      <button id="btn-pular" class="fantasma" title="Sortear outro lugar (sem perder pontos)">Pular</button>
+    </div>
+  </header>
+
+  <!-- Painel de palpite -->
+  <section id="palpite" hidden>
+    <p id="local-nome" hidden></p>
+    <h2>Em quem esta cidade votou para presidente?</h2>
+    <p class="sub">1º turno de 2026</p>
+    <div id="opcoes"></div>
+    <div id="preciso" hidden>
+      <div id="faixas">
+        <label class="faixa-linha"><span id="rot-0"></span><input id="faixa-0" type="range" min="0" max="100"><b id="val-0"></b></label>
+        <label class="faixa-linha"><span id="rot-1"></span><input id="faixa-1" type="range" min="0" max="100"><b id="val-1"></b></label>
+        <label class="faixa-linha"><span id="rot-2">Outros</span><input id="faixa-2" type="range" min="0" max="100"><b id="val-2"></b></label>
+      </div>
+      <p class="dica">O total fica sempre em 100%: ao mexer numa barra, a que você mexeu há mais tempo compensa.</p>
+      <button id="btn-confirmar" class="primario">Confirmar palpite</button>
+    </div>
+  </section>
+
+  <!-- Resultado da rodada -->
+  <section id="resultado" hidden>
+    <div id="res-cabecalho"></div>
+    <h2 id="res-cidade"></h2>
+    <p id="res-palpite" class="sub"></p>
+    <div id="res-barras"></div>
+    <div id="mapa"></div>
+    <button id="btn-proxima" class="primario">Próxima rodada</button>
+  </section>
+
+  <!-- Tela inicial -->
+  <section id="inicio" class="tela">
+    <div class="cartao">
+      <div class="logo grande">Geo<span>Voto</span></div>
+      <p>Você vai parar em algum lugar do Brasil pelo Street View.<br>Olhe em volta e adivinhe em quem a cidade votou para presidente.</p>
+      <label>Região
+        <select id="cfg-uf"></select>
+      </label>
+      <label>Rodadas
+        <select id="cfg-rodadas">
+          <option>5</option><option selected>10</option><option>20</option>
+        </select>
+      </label>
+      <label>Modo
+        <select id="cfg-modo">
+          <option value="classico">Clássico: acerte o vencedor</option>
+          <option value="preciso">Preciso: acerte a porcentagem</option>
+        </select>
+      </label>
+      <label>Dificuldade
+        <select id="cfg-dificuldade">
+          <option value="facil">Fácil: mostra a cidade e o estado</option>
+          <option value="dificil">Difícil: sem revelar o lugar</option>
+        </select>
+      </label>
+      <label>Locais
+        <select id="cfg-locais">
+          <option value="mais_urbanos">Mais cidades, algumas áreas rurais</option>
+          <option value="urbanos">Só cidades</option>
+          <option value="misto">Metade cidade, metade rural</option>
+        </select>
+      </label>
+      <label class="check"><input id="cfg-mover" type="checkbox" checked> Permitir andar pelas ruas</label>
+      <button id="btn-jogar" class="primario" disabled>Carregando dados…</button>
+      <p id="aviso" class="aviso" hidden></p>
+    </div>
+  </section>
+
+  <!-- Fim de jogo -->
+  <section id="fim" class="tela" hidden>
+    <div class="cartao largo">
+      <h2>Fim de jogo!</h2>
+      <p id="fim-total" class="total"></p>
+      <div id="mapa-fim"></div>
+      <ol id="fim-lista"></ol>
+      <button id="btn-novo" class="primario">Jogar de novo</button>
+    </div>
+  </section>
+
+  <div id="carregando" hidden><div class="spinner"></div><span>Procurando um lugar…</span></div>
+
+  <script src="../config.js"></script>
+  <script src="jogo.js?v=7"></script>
+</body>
+</html>

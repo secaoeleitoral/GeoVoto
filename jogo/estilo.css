@@ -1,0 +1,172 @@
+:root {
+  --fundo: #0f1420;
+  --painel: rgba(17, 23, 36, 0.94);
+  --borda: rgba(255, 255, 255, 0.1);
+  --texto: #eef1f7;
+  --suave: #9aa4b8;
+  --destaque: #f5c542;
+  --certo: #2fb36b;
+  --errado: #e0523f;
+  --raio: 14px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; }
+body {
+  background: var(--fundo);
+  color: var(--texto);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+[hidden] { display: none !important; }
+
+button {
+  font: inherit; cursor: pointer; border: 0; border-radius: 10px;
+  padding: 10px 16px; color: var(--texto); background: rgba(255,255,255,.08);
+  transition: transform .08s, background .15s, opacity .15s;
+}
+button:hover:not(:disabled) { background: rgba(255,255,255,.16); }
+button:active:not(:disabled) { transform: scale(.97); }
+button:disabled { opacity: .5; cursor: default; }
+button.primario { background: var(--destaque); color: #1b1600; font-weight: 700; width: 100%; padding: 13px; }
+button.primario:hover:not(:disabled) { background: #ffd65c; }
+button.fantasma { background: rgba(0,0,0,.35); border: 1px solid var(--borda); padding: 7px 12px; font-size: 14px; }
+
+/* O Google Maps grava position:relative no contêiner, por isso o !important */
+#streetview { position: fixed !important; inset: 0; width: 100vw; height: 100vh; height: 100dvh; }
+
+.logo { font-weight: 800; font-size: 20px; letter-spacing: -.5px; }
+.logo span { color: var(--destaque); }
+.logo.grande { font-size: 44px; margin-bottom: 4px; }
+
+/* Barra superior */
+#barra {
+  position: fixed; top: 12px; left: 12px; right: 12px; z-index: 5;
+  display: flex; align-items: center; gap: 16px; pointer-events: none;
+}
+#barra > * { pointer-events: auto; }
+#barra .logo { background: var(--painel); padding: 8px 14px; border-radius: var(--raio); }
+.placar { display: flex; gap: 2px; background: var(--painel); border-radius: var(--raio); overflow: hidden; }
+.placar div { padding: 6px 14px; text-align: center; }
+.placar small { display: block; font-size: 11px; color: var(--suave); text-transform: uppercase; letter-spacing: .5px; }
+.placar b { font-size: 17px; font-variant-numeric: tabular-nums; }
+.acoes { margin-left: auto; display: flex; gap: 8px; }
+
+/* Painel de palpite */
+#palpite {
+  position: fixed; left: 50%; bottom: 28px; transform: translateX(-50%); z-index: 5;
+  width: min(560px, calc(100% - 32px));
+  background: var(--painel); border: 1px solid var(--borda); border-radius: var(--raio);
+  padding: 16px 18px 18px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,.4);
+}
+#palpite h2 { margin: 0; font-size: 18px; }
+#local-nome {
+  margin: 0 0 8px; font-size: 20px; font-weight: 800; color: var(--destaque);
+}
+#local-nome small { color: var(--suave); font-weight: 500; font-size: 15px; }
+.sub { margin: 2px 0 12px; color: var(--suave); font-size: 13px; }
+#opcoes { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.opcao {
+  padding: 14px 10px; font-weight: 700; font-size: 16px; color: #fff;
+  background: var(--cor); border: 2px solid transparent;
+}
+.opcao:hover:not(:disabled) { background: var(--cor); filter: brightness(1.15); }
+.opcao small { display: block; font-weight: 500; font-size: 12px; opacity: .85; }
+.opcao kbd { float: left; font: 11px monospace; opacity: .6; }
+
+#faixas { display: flex; flex-direction: column; gap: 8px; margin: 4px 0 6px; }
+.faixa-linha {
+  display: grid; grid-template-columns: 130px 1fr 44px; align-items: center; gap: 10px;
+  font-weight: 700; text-align: left;
+}
+.faixa-linha b { text-align: right; font-variant-numeric: tabular-nums; font-size: 16px; }
+.faixa-linha input {
+  width: 100%; height: 10px; margin: 0; border-radius: 5px; appearance: none; cursor: pointer;
+  background: linear-gradient(90deg, var(--cor) var(--v), rgba(255,255,255,.12) var(--v));
+}
+.faixa-linha input::-webkit-slider-thumb {
+  appearance: none; width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; border: 3px solid var(--cor); cursor: grab;
+}
+.faixa-linha input::-moz-range-thumb {
+  box-sizing: border-box; width: 22px; height: 22px; border-radius: 50%;
+  background: #fff; border: 3px solid var(--cor); cursor: grab;
+}
+@media (max-width: 640px) { .faixa-linha { grid-template-columns: 90px 1fr 40px; font-size: 13px; } }
+.dica { margin: 0 0 12px; font-size: 12px; color: var(--suave); }
+
+table.comparacao { width: 100%; border-collapse: collapse; margin: 4px 0 6px; font-size: 13px; color: var(--texto); }
+table.comparacao th { font-weight: 500; color: var(--suave); text-align: right; padding: 2px 6px; }
+table.comparacao td { padding: 2px 6px; text-align: right; font-variant-numeric: tabular-nums; }
+table.comparacao td:first-child { text-align: left; }
+table.comparacao i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+
+/* Resultado */
+#resultado {
+  position: fixed; top: 12px; right: 12px; bottom: 12px; z-index: 6;
+  width: min(420px, calc(100% - 24px)); overflow-y: auto;
+  background: var(--painel); border: 1px solid var(--borda); border-radius: var(--raio);
+  padding: 18px; display: flex; flex-direction: column; gap: 10px;
+  box-shadow: 0 10px 40px rgba(0,0,0,.5);
+}
+#res-cabecalho { display: flex; justify-content: space-between; align-items: baseline; font-size: 22px; font-weight: 800; }
+#res-cabecalho .certo { color: var(--certo); }
+#res-cabecalho .errado { color: var(--errado); }
+#res-cabecalho .pts { color: var(--destaque); font-size: 18px; }
+#res-cidade { margin: 0; font-size: 24px; }
+#res-cidade small { color: var(--suave); font-weight: 500; font-size: 15px; }
+#res-palpite { margin: 0; }
+
+.barra-cand { font-size: 13px; margin-bottom: 6px; }
+.barra-cand .linha { display: flex; justify-content: space-between; margin-bottom: 2px; }
+.barra-cand .trilho { height: 8px; background: rgba(255,255,255,.08); border-radius: 4px; overflow: hidden; }
+.barra-cand .cheio { height: 100%; background: var(--cor); border-radius: 4px; }
+.barra-cand.vencedor .linha { font-weight: 700; }
+
+#mapa { flex: 1 0 220px; min-height: 220px; border-radius: 10px; overflow: hidden; }
+
+/* Telas cheias */
+.tela {
+  position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 16px;
+  background: radial-gradient(circle at 30% 20%, #1d2a44, var(--fundo) 70%);
+  overflow-y: auto;
+}
+.cartao {
+  width: min(440px, 100%); background: var(--painel); border: 1px solid var(--borda);
+  border-radius: 20px; padding: 28px; display: flex; flex-direction: column; gap: 14px;
+}
+.cartao.largo { width: min(720px, 100%); }
+.cartao p { margin: 0; color: var(--suave); }
+.cartao label { display: flex; flex-direction: column; gap: 4px; font-size: 13px; color: var(--suave); }
+.cartao label.check { flex-direction: row; align-items: center; gap: 8px; font-size: 14px; color: var(--texto); }
+select {
+  font: inherit; color: var(--texto); background: #1a2233; border: 1px solid var(--borda);
+  border-radius: 10px; padding: 10px;
+}
+.aviso { color: #ffb4a8 !important; font-size: 13px; }
+.aviso code { color: var(--texto); }
+
+#fim h2 { margin: 0; font-size: 28px; }
+.total { font-size: 18px; color: var(--texto) !important; }
+.total b { color: var(--destaque); font-size: 26px; }
+#mapa-fim { height: 300px; border-radius: 12px; overflow: hidden; }
+#fim-lista { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 4px; font-size: 14px; }
+#fim-lista li span { color: var(--suave); }
+#fim-lista .ok { color: var(--certo); }
+#fim-lista .nao { color: var(--errado); }
+
+#carregando {
+  position: fixed; inset: 0; z-index: 9; display: flex; gap: 12px; align-items: center; justify-content: center;
+  background: rgba(10, 14, 22, .75); font-size: 17px;
+}
+.spinner { width: 26px; height: 26px; border: 3px solid rgba(255,255,255,.2); border-top-color: var(--destaque); border-radius: 50%; animation: gira .8s linear infinite; }
+@keyframes gira { to { transform: rotate(360deg); } }
+
+@media (max-width: 640px) {
+  #barra { flex-wrap: wrap; gap: 8px; top: 8px; left: 8px; right: 8px; }
+  #barra .logo { display: none; }
+  .placar div { padding: 4px 10px; }
+  #palpite { bottom: 16px; padding: 12px; }
+  #palpite h2 { font-size: 16px; }
+  #resultado { top: auto; left: 8px; right: 8px; bottom: 8px; width: auto; max-height: 75vh; }
+  #mapa { flex-basis: 180px; min-height: 180px; }
+}
