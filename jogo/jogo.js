@@ -260,27 +260,33 @@ function atualizarPlacar() {
   $("sequencia").textContent = estado.sequencia;
 }
 
-// Palpite do modo preciso em %: [candidato A, candidato B, outros]
+// Palpite do modo preciso em %: [candidato A, candidato B, outros], com uma casa decimal.
+// As contas são feitas em décimos (0–1000) para a soma fechar exatamente em 100%.
 const FAIXAS = [0, 1, 2].map((i) => $(`faixa-${i}`));
-const palpiteAtual = () => FAIXAS.map((f) => +f.value);
+const CAMPOS = [0, 1, 2].map((i) => $(`val-${i}`));
+const decimos = () => FAIXAS.map((f) => Math.round(+f.value * 10));
+const palpiteAtual = () => decimos().map((d) => d / 10);
+const fmt1 = (x) => x.toLocaleString("pt-BR", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
-function definirPalpite(valores) {
-  valores.forEach((v, i) => {
-    FAIXAS[i].value = v;
-    FAIXAS[i].style.setProperty("--v", `${v}%`);
-    $(`val-${i}`).textContent = `${v}%`;
+function definirPalpite(dec) {
+  dec.forEach((d, i) => {
+    FAIXAS[i].value = d / 10;
+    FAIXAS[i].style.setProperty("--v", `${d / 10}%`);
+    // Não reescreve o campo enquanto a pessoa está digitando nele
+    if (document.activeElement !== CAMPOS[i]) CAMPOS[i].value = fmt1(d / 10);
   });
 }
 
 // Ordem em que as barras foram mexidas (a mais antiga primeiro). Ao mexer uma barra, a mexida há
 // mais tempo compensa a diferença para o total continuar em 100%; se ela chegar a 0, a outra completa.
 let ordemMexidas = [0, 1, 2];
-function mexerFaixa(i) {
+function mexerFaixa(i, valor) {
   ordemMexidas = [...ordemMexidas.filter((x) => x !== i), i];
-  const v = palpiteAtual();
-  let sobra = 100 - v[0] - v[1] - v[2];
+  const v = decimos();
+  if (valor !== undefined) v[i] = Math.round(Math.min(100, Math.max(0, valor)) * 10);
+  let sobra = 1000 - v[0] - v[1] - v[2];
   for (const j of ordemMexidas.filter((x) => x !== i && (x !== 2 || estado.temOutros))) {
-    const novo = Math.min(100, Math.max(0, v[j] + sobra));
+    const novo = Math.min(1000, Math.max(0, v[j] + sobra));
     sobra -= novo - v[j];
     v[j] = novo;
   }
@@ -289,7 +295,7 @@ function mexerFaixa(i) {
 
 function reiniciarFaixas() {
   ordemMexidas = [0, 1, 2];
-  definirPalpite(estado.temOutros ? [47, 47, 6] : [50, 50, 0]);
+  definirPalpite(estado.temOutros ? [470, 470, 60] : [500, 500, 0]);
 }
 
 function responder(escolha) {
@@ -308,7 +314,7 @@ function responder(escolha) {
     const linhas = [estado.candA, estado.candB, "OUTROS"].map((c, i) =>
       c === "OUTROS" && !estado.temOutros ? "" :
       `<tr><td><i style="background:${corPorCand[c] || COR_OUTROS}"></i>${c === "OUTROS" ? "Outros" : nomeCand(c)}</td>` +
-      `<td>${palpite[i]}%</td><td>${pct(verdade[i])}</td></tr>`).join("");
+      `<td>${fmt1(palpite[i])}%</td><td>${pct(verdade[i])}</td></tr>`).join("");
     textoPalpite = `<table class="comparacao"><tr><th></th><th>Seu palpite</th><th>Real</th></tr>${linhas}</table>` +
       `Erro de ${pct(erro).replace("%", " p.p.")}`;
   } else {
@@ -379,9 +385,19 @@ $("btn-pular").onclick = () => estado.atual && !estado.atual.respondida && proxi
 $("btn-inicio").onclick = () => estado.atual && panorama.setPano(estado.atual.pano);
 $("btn-confirmar").onclick = () => responder();
 FAIXAS.forEach((f, i) => (f.oninput = () => mexerFaixa(i)));
+CAMPOS.forEach((campo, i) => {
+  campo.oninput = () => {
+    const x = parseFloat(campo.value.replace(",", "."));
+    if (!isNaN(x)) mexerFaixa(i, x);
+  };
+  // Ao sair do campo, mostra o valor já ajustado (ex.: "58,33" vira "58,3")
+  campo.onchange = () => (campo.value = fmt1(palpiteAtual()[i]));
+  campo.onfocus = () => campo.select();
+});
 
 document.addEventListener("keydown", (e) => {
-  if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT" && e.target.type !== "range") return;
+  const campoPalpite = CAMPOS.includes(e.target); // Enter nos campos de % confirma o palpite
+  if (e.target.tagName === "SELECT" || e.target.tagName === "INPUT" && e.target.type !== "range" && !campoPalpite) return;
   if (!$("palpite").hidden && estado.modo === "classico" && /^[1-9]$/.test(e.key)) {
     const c = estado.opcoes[+e.key - 1];
     if (c) responder(c);
