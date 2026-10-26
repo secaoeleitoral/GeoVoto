@@ -218,6 +218,12 @@ function iniciarJogo() {
     FAIXAS[i].style.setProperty("--cor", corPorCand[c]);
   });
   FAIXAS[2].style.setProperty("--cor", COR_OUTROS);
+  // No 2º turno só há dois candidatos: a barra "Outros" some
+  estado.temOutros = estado.pool.some((m) => m.res.length > 2);
+  FAIXAS[2].closest(".faixa-linha").hidden = !estado.temOutros;
+  $("dica").textContent = estado.temOutros
+    ? "O total fica sempre em 100%: ao mexer numa barra, a que você mexeu há mais tempo compensa."
+    : "O total fica sempre em 100%: ao mexer numa barra, a outra se ajusta.";
   $("opcoes").hidden = estado.modo === "preciso";
   $("preciso").hidden = estado.modo !== "preciso";
 
@@ -273,7 +279,7 @@ function mexerFaixa(i) {
   ordemMexidas = [...ordemMexidas.filter((x) => x !== i), i];
   const v = palpiteAtual();
   let sobra = 100 - v[0] - v[1] - v[2];
-  for (const j of ordemMexidas.filter((x) => x !== i)) {
+  for (const j of ordemMexidas.filter((x) => x !== i && (x !== 2 || estado.temOutros))) {
     const novo = Math.min(100, Math.max(0, v[j] + sobra));
     sobra -= novo - v[j];
     v[j] = novo;
@@ -283,7 +289,7 @@ function mexerFaixa(i) {
 
 function reiniciarFaixas() {
   ordemMexidas = [0, 1, 2];
-  definirPalpite([47, 47, 6]);
+  definirPalpite(estado.temOutros ? [47, 47, 6] : [50, 50, 0]);
 }
 
 function responder(escolha) {
@@ -300,6 +306,7 @@ function responder(escolha) {
     pontos = Math.round(1000 * Math.exp(-erro / 10));
     acertou = Math.sign(palpite[0] - palpite[1]) === Math.sign(verdade[0] - verdade[1]) || erro < 2;
     const linhas = [estado.candA, estado.candB, "OUTROS"].map((c, i) =>
+      c === "OUTROS" && !estado.temOutros ? "" :
       `<tr><td><i style="background:${corPorCand[c] || COR_OUTROS}"></i>${c === "OUTROS" ? "Outros" : nomeCand(c)}</td>` +
       `<td>${palpite[i]}%</td><td>${pct(verdade[i])}</td></tr>`).join("");
     textoPalpite = `<table class="comparacao"><tr><th></th><th>Seu palpite</th><th>Real</th></tr>${linhas}</table>` +

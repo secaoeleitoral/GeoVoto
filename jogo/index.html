@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>GeoVoto</title>
-  <link rel="stylesheet" href="estilo.css?v=7">
+  <link rel="stylesheet" href="estilo.css?v=8">
 </head>
 <body>
   <div id="streetview"></div>
@@ -27,7 +27,7 @@
   <section id="palpite" hidden>
     <p id="local-nome" hidden></p>
     <h2>Em quem esta cidade votou para presidente?</h2>
-    <p class="sub">1º turno de 2026</p>
+    <p class="sub">2º turno de 2026</p>
     <div id="opcoes"></div>
     <div id="preciso" hidden>
       <div id="faixas">
@@ -35,7 +35,7 @@
         <label class="faixa-linha"><span id="rot-1"></span><input id="faixa-1" type="range" min="0" max="100"><b id="val-1"></b></label>
         <label class="faixa-linha"><span id="rot-2">Outros</span><input id="faixa-2" type="range" min="0" max="100"><b id="val-2"></b></label>
       </div>
-      <p class="dica">O total fica sempre em 100%: ao mexer numa barra, a que você mexeu há mais tempo compensa.</p>
+      <p id="dica" class="dica">O total fica sempre em 100%: ao mexer numa barra, a que você mexeu há mais tempo compensa.</p>
       <button id="btn-confirmar" class="primario">Confirmar palpite</button>
     </div>
   </section>
@@ -54,7 +54,7 @@
   <section id="inicio" class="tela">
     <div class="cartao">
       <div class="logo grande">Geo<span>Voto</span></div>
-      <p>Você vai parar em algum lugar do Brasil pelo Street View.<br>Olhe em volta e adivinhe em quem a cidade votou para presidente.</p>
+      <p>Você vai parar em algum lugar do Brasil pelo Street View.<br>Olhe em volta e adivinhe em quem a cidade votou para presidente no 2º turno de 2026.</p>
       <label>Região
         <select id="cfg-uf"></select>
       </label>
@@ -102,6 +102,6 @@
   <div id="carregando" hidden><div class="spinner"></div><span>Procurando um lugar…</span></div>
 
   <script src="../config.js"></script>
-  <script src="jogo.js?v=7"></script>
+  <script src="jogo.js?v=8"></script>
 </body>
 </html>

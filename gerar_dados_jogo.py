@@ -1,17 +1,19 @@
-"""Gera jogo/municipios.json (resultado de presidente 2026 + contorno simplificado de cada município)
-para o jogo estilo GeoGuessr. Uso: python gerar_dados_jogo.py"""
-import glob, json
+"""Gera jogo/municipios.json (resultado de presidente 2026 no 2º turno + contorno simplificado de cada
+município) para o jogo estilo GeoGuessr. Uso: python gerar_dados_jogo.py"""
+import json
+from pathlib import Path
 import pandas as pd
 from shapely.geometry import shape, mapping
 
+DADOS = Path(r"D:\Downloads\Centro Sul PR")  # onde ficam os CSVs/GeoJSON baixados do TSE
 TOLERANCIA = 0.004  # graus (~400 m)
 TOP = 5             # candidatos guardados por município
 
-csvs = [f for f in glob.glob("presidente_2026_*_municipios.csv")]
-df = pd.concat([pd.read_csv(f, sep=";", encoding="utf-8-sig", decimal=",", dtype={"Cód. IBGE": str}) for f in csvs])
-df = df[df["Destinação do voto"] == "Válido"].sort_values("Votos", ascending=False)
+df = pd.read_csv(DADOS / "presidente_2026_2turno_brasil_municipios.csv", sep=";", encoding="utf-8-sig",
+                 decimal=",", dtype={"Cód. IBGE": str})
+df = df[(df["UF"] != "ZZ") & (df["Destinação do voto"] == "Válido")].sort_values("Votos", ascending=False)
 
-geo = json.load(open("presidente_2026_brasil_municipios_simplificado.geojson", encoding="utf-8"))
+geo = json.load(open(DADOS / "presidente_2026_2turno_brasil_municipios_simplificado.geojson", encoding="utf-8"))
 geometrias = {f["properties"]["cd_ibge"]: f for f in geo["features"]}
 
 # Coordenadas da sede (centro urbano) de cada município, de github.com/kelvins/municipios-brasileiros
